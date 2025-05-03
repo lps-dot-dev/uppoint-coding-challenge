@@ -12,8 +12,8 @@ services:
         networks:
             - uppoint-network
         ports:
-            - "6000:80"
-            - "6001:6001"
+            - "3000:80"
+            - "3001:6001"
         volumes:
             - .:/var/www/html
 
@@ -22,7 +22,7 @@ services:
         networks:
             - uppoint-network
         ports:
-            - "6002:3306"
+            - "3002:3306"
         environment:
             - "MYSQL_DATABASE=business_ledger"
             - "MYSQL_PASSWORD=secret"
@@ -43,7 +43,7 @@ services:
         networks:
             - uppoint-network
         ports:
-            - "6003:6379"
+            - "3003:6379"
         healthcheck:
             test: ["CMD-SHELL", "redis-cli ping || exit 1"]
             interval: 5s
