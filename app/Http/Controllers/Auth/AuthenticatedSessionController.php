@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Cookies\JsonWebTokenCookie;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,27 +26,45 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Get a JWT via given credentials.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function login(Request $request): RedirectResponse
     {
-        $request->authenticate();
+        $credentials = $request->only('email', 'password');
 
-        $request->session()->regenerate();
+        if (!$token = auth()->attempt($credentials)) {
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
+        }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $cookie = JsonWebTokenCookie::make($token);
+        return to_route('dashboard')->withCookie($cookie);
     }
 
     /**
-     * Destroy an authenticated session.
+     * Log the user out (Invalidate the token).
+     *
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Request $request): RedirectResponse
+    public function logout(): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        auth()->logout();
+        return to_route('home');
+    }
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/');
+    /**
+     * Refresh a token.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function refresh(): HttpResponse
+    {
+        $newToken = auth()->refresh();
+        $cookie = JsonWebTokenCookie::make($newToken);
+        return response('')->cookie($cookie);
     }
 }
