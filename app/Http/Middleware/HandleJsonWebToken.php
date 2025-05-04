@@ -19,7 +19,7 @@ class HandleJsonWebToken
     public function handle(Request $request, Closure $next)
     {
         $token = $request->cookie(JsonWebTokenCookie::NAME);
-        if ($token === null) {
+        if (is_string($token) === false) {
             throw new AuthenticationException(redirectTo: route('login'));
         }
 
