@@ -4,6 +4,7 @@ use App\Http\Cookies\JsonWebTokenCookie;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\HandleJsonWebToken;
+use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RefreshJsonWebToken;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -31,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'jwt-auth' => HandleJsonWebToken::class,
+            'jwt-guest' => RedirectIfAuthenticated::class,
             'jwt-refresh' => RefreshJsonWebToken::class
         ]);
     })
