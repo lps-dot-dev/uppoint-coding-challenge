@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
+    use RespondsWithToken;
+
     /**
      * Show the login page.
      */
@@ -25,27 +25,41 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Get a JWT via given credentials.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function login(Request $request): JsonResponse
     {
-        $request->authenticate();
+        $credentials = $request->only('email', 'password');
 
-        $request->session()->regenerate();
+        if (!$token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return $this->respondWithToken($token);
     }
 
     /**
-     * Destroy an authenticated session.
+     * Log the user out (Invalidate the token).
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Request $request): RedirectResponse
+    public function logout() : JsonResponse
     {
-        Auth::guard('web')->logout();
+        auth()->logout();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        return response()->json(['message' => 'Successfully logged out']);
+    }
 
-        return redirect('/');
+    /**
+     * Refresh a token.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refresh(): JsonResponse
+    {
+        $newToken = auth()->refresh();
+        return $this->respondWithToken($newToken);
     }
 }
