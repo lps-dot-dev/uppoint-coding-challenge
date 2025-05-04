@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Cookies\JsonWebTokenCookie;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
@@ -13,8 +14,6 @@ use Inertia\Response;
 
 class RegisteredUserController extends Controller
 {
-    use RespondsWithToken;
-
     /**
      * Show the registration page.
      */
@@ -23,7 +22,7 @@ class RegisteredUserController extends Controller
         return Inertia::render('auth/Register');
     }
 
-    public function register(Request $request): JsonResponse
+    public function register(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -38,6 +37,7 @@ class RegisteredUserController extends Controller
         ]);
 
         $token = auth()->login($user);
-        return $this->respondWithToken($token);
+        $cookie = JsonWebTokenCookie::make($token);
+        return to_route('dashboard')->withCookie($cookie);
     }
 }

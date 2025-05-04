@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Cookies\JsonWebTokenCookie;
 use Closure;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Throwable;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -16,10 +18,16 @@ class HandleJsonWebToken
      */
     public function handle(Request $request, Closure $next)
     {
+        $token = $request->cookie(JsonWebTokenCookie::NAME);
+        if ($token === null) {
+            throw new AuthenticationException(redirectTo: route('login'));
+        }
+
         try {
-            JWTAuth::parseToken()->authenticate();
-        } catch (Throwable $_) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            JWTAuth::setToken($token);
+            JWTAuth::authenticate();
+        } catch (Throwable $e) {
+            throw new AuthenticationException(redirectTo: route('login'));
         }
 
         return $next($request);

@@ -1,12 +1,17 @@
 <?php
 
+use App\Http\Cookies\JsonWebTokenCookie;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\HandleJsonWebToken;
+use App\Http\Middleware\RefreshJsonWebToken;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -26,9 +31,28 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'jwt' => HandleJsonWebToken::class
+            'jwt.auth' => HandleJsonWebToken::class,
+            'jwt.refresh' => RefreshJsonWebToken::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->respond(function (AuthenticationException $e, Request $request) {
+            if (Inertia::isInertiaRequest($request)) {
+                return to_route($e->redirectTo($request))
+                    ->withoutCookie(JsonWebTokenCookie::NAME)
+                    ->withErrors([
+                        'email' => trans('auth.failed'),
+                    ]);
+            }
+    
+            if ($request->expectsJson()) {
+                return response()
+                    ->json(['message' => 'Unauthenticated.'], 401)
+                    ->withoutCookie(JsonWebTokenCookie::NAME);
+            }
+    
+            return redirect()
+                ->guest($e->redirectTo($request))
+                ->withoutCookie(JsonWebTokenCookie::NAME);
+        });
     })->create();

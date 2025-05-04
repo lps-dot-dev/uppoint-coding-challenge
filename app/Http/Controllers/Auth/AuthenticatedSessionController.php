@@ -3,16 +3,17 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
+use App\Http\Cookies\JsonWebTokenCookie;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
-    use RespondsWithToken;
-
     /**
      * Show the login page.
      */
@@ -27,39 +28,43 @@ class AuthenticatedSessionController extends Controller
     /**
      * Get a JWT via given credentials.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function login(Request $request): JsonResponse
+    public function login(Request $request): RedirectResponse
     {
         $credentials = $request->only('email', 'password');
 
         if (!$token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
         }
 
-        return $this->respondWithToken($token);
+        $cookie = JsonWebTokenCookie::make($token);
+        return to_route('dashboard')->withCookie($cookie);
     }
 
     /**
      * Log the user out (Invalidate the token).
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function logout() : JsonResponse
+    public function logout(): RedirectResponse
     {
         auth()->logout();
-
-        return response()->json(['message' => 'Successfully logged out']);
+        return to_route('home');
     }
 
     /**
      * Refresh a token.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Response
      */
-    public function refresh(): JsonResponse
+    public function refresh(): HttpResponse
     {
         $newToken = auth()->refresh();
-        return $this->respondWithToken($newToken);
+        $cookie = JsonWebTokenCookie::make($newToken);
+        return response('')->cookie($cookie);
     }
 }
