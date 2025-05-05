@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import PlaceholderPattern from '../components/PlaceholderPattern.vue';
+import TransactionsTable from '@/components/TransactionsTable.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -28,8 +29,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <PlaceholderPattern />
                 </div>
             </div>
-            <div class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border md:min-h-min">
-                <PlaceholderPattern />
+            <div class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 dark:bg-zinc-100 dark:border-sidebar-border md:min-h-min">
+                <TransactionsTable />
             </div>
         </div>
     </AppLayout>
