@@ -4,8 +4,11 @@ use App\Http\Cookies\JsonWebTokenCookie;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\HandleJsonWebToken;
+use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RefreshJsonWebToken;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -23,14 +26,30 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+        $middleware->priority([
+            EncryptCookies::class,
+            HandleJsonWebToken::class,
+            RedirectIfAuthenticated::class,
+            HandleAppearance::class,
+            HandleInertiaRequests::class,
+            AddLinkHeadersForPreloadedAssets::class,
+            RefreshJsonWebToken::class,
+        ]);
+
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        $middleware->api(append: [
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+        ]);
+
         $middleware->alias([
             'jwt-auth' => HandleJsonWebToken::class,
+            'jwt-guest' => RedirectIfAuthenticated::class,
             'jwt-refresh' => RefreshJsonWebToken::class
         ]);
     })

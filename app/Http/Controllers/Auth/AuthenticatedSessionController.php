@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -50,10 +52,16 @@ class AuthenticatedSessionController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function logout(): RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
-        auth()->logout();
-        return to_route('home');
+        $token = $request->cookie(JsonWebTokenCookie::NAME);
+        try {
+            JWTAuth::setToken($token)->invalidate();
+        } catch (JWTException $_) {
+            // Do nothing.
+        }
+    
+        return to_route('home')->withoutCookie(JsonWebTokenCookie::NAME);
     }
 
     /**
@@ -61,9 +69,10 @@ class AuthenticatedSessionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function refresh(): HttpResponse
+    public function refresh(Request $request): HttpResponse
     {
-        $newToken = auth()->refresh();
+        $token = $request->cookie(JsonWebTokenCookie::NAME);
+        $newToken = JWTAuth::setToken($token)->refresh();
         $cookie = JsonWebTokenCookie::make($newToken);
         return response('')->cookie($cookie);
     }

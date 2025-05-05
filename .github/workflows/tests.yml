@@ -10,6 +10,9 @@ on:
       - develop
       - main
 
+env:
+  JWT_SECRET: 6K4nDVORoBrGPivjyEHapsZBSepgVhH2Mf8W4A4OKnQgp9ganjjQeQ93xb32OlAB
+
 jobs:
   ci:
     runs-on: ubuntu-latest
