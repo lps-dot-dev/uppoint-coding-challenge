@@ -69,9 +69,10 @@ class AuthenticatedSessionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function refresh(): HttpResponse
+    public function refresh(Request $request): HttpResponse
     {
-        $newToken = auth()->refresh();
+        $token = $request->cookie(JsonWebTokenCookie::NAME);
+        $newToken = JWTAuth::setToken($token)->refresh();
         $cookie = JsonWebTokenCookie::make($newToken);
         return response('')->cookie($cookie);
     }

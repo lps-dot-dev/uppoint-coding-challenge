@@ -7,6 +7,8 @@ use App\Http\Middleware\HandleJsonWebToken;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RefreshJsonWebToken;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -25,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
         $middleware->priority([
+            EncryptCookies::class,
             HandleJsonWebToken::class,
             RedirectIfAuthenticated::class,
             HandleAppearance::class,
@@ -37,6 +40,11 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+        ]);
+
+        $middleware->api(append: [
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
         ]);
 
         $middleware->alias([

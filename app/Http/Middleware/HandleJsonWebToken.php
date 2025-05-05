@@ -20,16 +20,16 @@ class HandleJsonWebToken
     public function handle(Request $request, Closure $next)
     {
         $token = $request->cookie(JsonWebTokenCookie::NAME);
-        if (is_string($token) === false) {
-            throw new AuthenticationException(redirectTo: route('login'));
+        if (empty($token)) {
+            throw new AuthenticationException(redirectTo: 'login');
         }
 
         try {
             JWTAuth::setToken($token);
             $user = JWTAuth::authenticate();
             Auth::setUser($user);
-        } catch (Throwable $e) {
-            throw new AuthenticationException(redirectTo: route('login'));
+        } catch (Throwable $_) {
+            throw new AuthenticationException(redirectTo: 'login');
         }
 
         return $next($request);

@@ -6,12 +6,12 @@ const backendHttpClient = axios.create({
     timeout: 1000,
 });
 
-export const AxiosInstanceSymbol = Symbol('AxiosInstance');
+export const BackendHttpClientSymbol = Symbol('AxiosInstance');
 
 export function useBackendHttpClientPlugin() {
     return {
         install(app: App) {
-            app.provide(AxiosInstanceSymbol, backendHttpClient);
+            app.provide(BackendHttpClientSymbol, backendHttpClient);
         },
     };
 }
