@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Transaction extends Model
+{
+    /** @use HasFactory<\Database\Factories\TransactionFactory> */
+    use HasFactory;
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array<string>|bool
+     */
+    protected $guarded = ['id'];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'immutable_datetime',
+            'status' => TransactionStatus::class,
+            'type' => TransactionType::class,
+            'updated_at' => 'immutable_datetime',
+        ];
+    }
+}
