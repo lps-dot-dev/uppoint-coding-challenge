@@ -17,6 +17,6 @@ Route::middleware('jwt-guest')->group(function () {
 });
 
 Route::middleware('jwt-auth')->group(function () {
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+    Route::post('logout', [AuthenticatedSessionController::class, 'logout'])
         ->name('logout');
 });
