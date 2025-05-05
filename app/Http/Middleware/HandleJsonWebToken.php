@@ -6,6 +6,7 @@ use App\Http\Cookies\JsonWebTokenCookie;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -25,7 +26,8 @@ class HandleJsonWebToken
 
         try {
             JWTAuth::setToken($token);
-            JWTAuth::authenticate();
+            $user = JWTAuth::authenticate();
+            Auth::setUser($user);
         } catch (Throwable $e) {
             throw new AuthenticationException(redirectTo: route('login'));
         }

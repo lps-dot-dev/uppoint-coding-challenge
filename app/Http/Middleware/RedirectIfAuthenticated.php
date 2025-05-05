@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Http\Cookies\JsonWebTokenCookie;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -25,7 +26,8 @@ class RedirectIfAuthenticated
 
         try {
             JWTAuth::setToken($token);
-            JWTAuth::authenticate();
+            $user = JWTAuth::authenticate();
+            Auth::setUser($user);
         } catch (Throwable $_) {
             return $next($request);
         }
