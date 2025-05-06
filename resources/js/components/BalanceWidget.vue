@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
 import { BackendHttpClientSymbol } from '@/plugins/axios';
 import { AxiosInstance } from 'axios';
 import { computed, inject, onMounted, ref } from 'vue';
+import DepositForm from './DepositForm.vue';
 
 const backendHttpClient = inject<AxiosInstance>(BackendHttpClientSymbol);
 const isLoading = ref(false);
@@ -40,5 +40,5 @@ onMounted(() => {
     <h1>Balance</h1>
     <p class="font-bold">{{ formattedWalletBalance }}</p>
     <hr class="my-2 h-px border-t-0 bg-transparent bg-gradient-to-r from-transparent via-neutral-500 to-transparent opacity-25 dark:via-neutral-400" />
-    <Button>New Deposit</Button>
+    <DepositForm />
 </template>
