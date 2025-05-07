@@ -2,21 +2,20 @@
 
 namespace App\Events\Accounting;
 
-use App\Models\Transaction;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class DepositStarted implements ShouldBroadcast
+class UserBalanceUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(private Transaction $transaction)
+    public function __construct(public int $userId, public float $amount)
     {
         //
     }
@@ -29,7 +28,7 @@ class DepositStarted implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('Accounting.'.$this->transaction->user_id),
+            new PrivateChannel('Accounting.'.$this->userId),
         ];
     }
 
@@ -38,26 +37,6 @@ class DepositStarted implements ShouldBroadcast
      */
     public function broadcastAs(): string
     {
-        return 'deposit.created';
-    }
-
-    /**
-     * Get the data to broadcast.
-     *
-     * @return array<string, mixed>
-     */
-    public function broadcastWith(): array
-    {
-        return [
-            'id' => $this->transaction->id,
-            'amount' => $this->transaction->amount,
-            'status' => $this->transaction->status,
-            'type' => $this->transaction->type
-        ];
-    }
-
-    public function getTransaction(): Transaction
-    {
-        return $this->transaction;
+        return 'balance.updated';
     }
 }

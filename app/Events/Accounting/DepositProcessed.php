@@ -9,7 +9,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class DepositStarted implements ShouldBroadcast
+class DepositProcessed implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -38,7 +38,7 @@ class DepositStarted implements ShouldBroadcast
      */
     public function broadcastAs(): string
     {
-        return 'deposit.created';
+        return 'deposit.processed';
     }
 
     /**
@@ -50,9 +50,7 @@ class DepositStarted implements ShouldBroadcast
     {
         return [
             'id' => $this->transaction->id,
-            'amount' => $this->transaction->amount,
             'status' => $this->transaction->status,
-            'type' => $this->transaction->type
         ];
     }
 
