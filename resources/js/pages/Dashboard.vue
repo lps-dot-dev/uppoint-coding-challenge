@@ -6,7 +6,7 @@ import PlaceholderPattern from '../components/PlaceholderPattern.vue';
 import TransactionsTable from '@/components/TransactionsTable.vue';
 import BalanceWidget from '@/components/BalanceWidget.vue';
 import Toast from '@/components/ui/toast/Toast.vue';
-import { computed, inject, onMounted, onUnmounted, ref } from 'vue';
+import { inject, onMounted, onUnmounted, ref } from 'vue';
 import Echo from 'laravel-echo';
 import { EchoSymbol } from '@/plugins/echo';
 
@@ -22,10 +22,10 @@ const toastTitle = ref('Accounting');
 
 const echo = inject<Echo<'reverb'>>(EchoSymbol);
 const page = usePage<SharedData>();
-const user = computed(() => page.props.auth.user);
+const userId = page.props.auth.user.id;
 
 onMounted(() => {
-    const accountingChannel = echo?.private(`Accounting.${user.value.id}`);
+    const accountingChannel = echo?.private(`Accounting.${userId}`);
     accountingChannel?.listen('.deposit.created', () => {
         toastDescription.value = 'Deposit has been initiated!';
         displayToast.value = true;
@@ -38,7 +38,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    echo?.leaveChannel(`Accounting.${user.value.id}`);
+    echo?.leaveChannel(`Accounting.${userId}`);
 });
 
 </script>
