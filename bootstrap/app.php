@@ -69,6 +69,13 @@ return Application::configure(basePath: dirname(__DIR__))
                     ->json(['message' => 'Unauthenticated.'], 401)
                     ->withoutCookie(JsonWebTokenCookie::NAME);
             }
+            
+            if (
+                $request->hasHeader('X-Echo-Reverb')
+                && $request->header('X-Echo-Reverb') === 'auth'
+            ) {
+                return response()->json(['message' => 'Unauthenticated.'], 403);
+            }
     
             return redirect()
                 ->guest($e->redirectTo($request))

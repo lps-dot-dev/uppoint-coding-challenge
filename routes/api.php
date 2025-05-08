@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('jwt-auth')->group(function () {
-    Route::post('broadcasting/auth', function (Request $request) {
+    Route::post('broadcasts/auth', function (Request $request) {
         try {
             return Broadcast::auth($request);
         } catch (\Throwable $_) {
