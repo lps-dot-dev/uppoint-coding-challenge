@@ -8,6 +8,7 @@ import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import { useEchoReverbPlugin } from './plugins/echo';
 import { useBackendHttpClientPlugin } from './plugins/axios';
+import Aura from '@primeuix/themes/aura';
 import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
 
@@ -34,7 +35,11 @@ createInertiaApp({
             .use(useBackendHttpClientPlugin())
             .use(useEchoReverbPlugin())
             .use(plugin)
-            .use(PrimeVue)
+            .use(PrimeVue, {
+                theme: {
+                    preset: Aura
+                }
+            })
             .use(ToastService)
             .use(ZiggyVue)
             .mount(el);
