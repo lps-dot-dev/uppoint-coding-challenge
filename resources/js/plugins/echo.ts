@@ -11,6 +11,7 @@ const echo = new Echo({
   wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
   forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
   enabledTransports: ['ws', 'wss'],
+  authEndpoint: '/api/broadcasting/auth'
 });
 
 export const EchoSymbol = Symbol('Echo');
