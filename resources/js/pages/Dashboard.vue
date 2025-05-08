@@ -12,7 +12,7 @@ import Echo from 'laravel-echo';
 import { EchoSymbol } from '@/plugins/echo';
 import { useToast } from "primevue/usetoast";
 import { DepositProcessed, Transaction } from '@/types/accounting';
-import { useAccounting } from '@/composables/useAccounting';
+import { useAccountingStore } from '@/stores/accounting';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -21,7 +21,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const accountingComposable = useAccounting();
+const accountingStore = useAccountingStore();
 const echo = inject<Echo<'reverb'>>(EchoSymbol);
 const toast = useToast();
 const page = usePage<SharedData>();
@@ -40,7 +40,7 @@ onMounted(() => {
             toast.add({ severity: 'error', summary: `Deposit ${depositProcessed.id}`, detail: 'Processing failed!', life: 3000 });
         }
 
-        accountingComposable.updateTransactionStatus(depositProcessed.id, depositProcessed.status);
+        accountingStore.updateTransactionStatus(depositProcessed.id, depositProcessed.status);
     });
 });
 

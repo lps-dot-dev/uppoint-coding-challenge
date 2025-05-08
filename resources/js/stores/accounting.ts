@@ -1,7 +1,8 @@
 import { Transaction, TransactionStatus } from "@/types/accounting";
+import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-export function useAccounting() {
+export const useAccountingStore = defineStore('accounting', () => {
     const transactions = ref<Map<number, Transaction>>(new Map());
     const transactionsList = computed(() => Array.from(transactions.value.values()));
 
@@ -27,4 +28,4 @@ export function useAccounting() {
     }
 
     return { addTransaction, setTransactions, updateTransactionStatus, transactionsList };
-};
+});

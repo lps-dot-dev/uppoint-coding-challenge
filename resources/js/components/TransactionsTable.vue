@@ -3,9 +3,9 @@ import { AxiosInstance } from 'axios';
 import { BackendHttpClientSymbol } from '@/plugins/axios';
 import { inject, reactive, ref, onMounted, computed } from 'vue';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
-import { useAccounting } from '@/composables/useAccounting';
+import { useAccountingStore } from '@/stores/accounting';
 
-const accountingComposable = useAccounting();
+const accountingStore = useAccountingStore();
 const backendHttpClient = inject<AxiosInstance>(BackendHttpClientSymbol);
 const isLoading = ref(false);
 const totalRows = ref(0);
@@ -19,7 +19,7 @@ const columns = ref([
     { field: 'updated_at', title: 'Updated At' },
 ]);
 const params = reactive({ currentPage: 1, pageSize: 10 });
-const rows = computed(() => accountingComposable.transactionsList.value);
+const rows = computed(() => accountingStore.transactionsList);
 
 onMounted(() => {
     getTransactions(params.currentPage);
@@ -30,7 +30,7 @@ const getTransactions = async (pageNumber: number) => {
     backendHttpClient?.get('/api/transaction', { params: { 'page': pageNumber } })
         .then(response => {
             const { data, total } = response.data;
-            accountingComposable.setTransactions(data);
+            accountingStore.setTransactions(data);
             totalRows.value = total;
         })
         .catch(error => {

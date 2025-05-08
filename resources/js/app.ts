@@ -1,6 +1,7 @@
 import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/vue3';
+import { createPinia } from 'pinia';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
@@ -26,6 +27,7 @@ declare module 'vite/client' {
 }
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const pinia = createPinia();
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -34,6 +36,7 @@ createInertiaApp({
         createApp({ render: () => h(App, props) })
             .use(useBackendHttpClientPlugin())
             .use(useEchoReverbPlugin())
+            .use(pinia)
             .use(plugin)
             .use(PrimeVue, {
                 theme: {
