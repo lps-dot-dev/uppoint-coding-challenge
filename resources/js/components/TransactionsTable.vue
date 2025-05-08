@@ -1,49 +1,51 @@
 <script setup lang="ts">
-    import { AxiosInstance } from 'axios';
-    import { BackendHttpClientSymbol } from '@/plugins/axios';
-    import { inject, reactive, ref, onMounted } from 'vue';
-    import Vue3Datatable from '@bhplugin/vue3-datatable';
+import { AxiosInstance } from 'axios';
+import { BackendHttpClientSymbol } from '@/plugins/axios';
+import { inject, reactive, ref, onMounted, computed } from 'vue';
+import Vue3Datatable from '@bhplugin/vue3-datatable';
+import { useAccounting } from '@/composables/useAccounting';
 
-    const backendHttpClient = inject<AxiosInstance>(BackendHttpClientSymbol);
-    const isLoading = ref(false);
-    const totalRows = ref(0);
+const accountingComposable = useAccounting();
+const backendHttpClient = inject<AxiosInstance>(BackendHttpClientSymbol);
+const isLoading = ref(false);
+const totalRows = ref(0);
 
-    const columns = ref([
-        { field: 'id', title: 'ID', isUnique: true, type: 'number' },
-        { field: 'amount', title: 'Amount' },
-        { field: 'status', title: 'Status' },
-        { field: 'type', title: 'Type' },
-        { field: 'created_at', title: 'Created At' },
-        { field: 'updated_at', title: 'Updated At' },
-    ]);
-    const params = reactive({ currentPage: 1, pageSize: 10 });
-    const rows = ref([]);
+const columns = ref([
+    { field: 'id', title: 'ID', isUnique: true, type: 'number' },
+    { field: 'amount', title: 'Amount' },
+    { field: 'status', title: 'Status' },
+    { field: 'type', title: 'Type' },
+    { field: 'created_at', title: 'Created At' },
+    { field: 'updated_at', title: 'Updated At' },
+]);
+const params = reactive({ currentPage: 1, pageSize: 10 });
+const rows = computed(() => accountingComposable.transactionsList.value);
 
-    onMounted(() => {
-        getTransactions(params.currentPage);
-    });
+onMounted(() => {
+    getTransactions(params.currentPage);
+});
 
-    const getTransactions = async (pageNumber: number) => {
-        isLoading.value = true;
-        backendHttpClient?.get('/api/transaction', { params: { 'page': pageNumber } })
-            .then(response => {
-                const { data, total } = response.data;
-                rows.value = data;
-                totalRows.value = total;
-            })
-            .catch(error => {
-                console.error(error);
-            })
-            .finally(() => {
-                isLoading.value = false;
-            });
-    };
-    const handlePageChange = (data: any) => {
-        params.currentPage = data.current_page;
-        params.pageSize = data.pagesize;
+const getTransactions = async (pageNumber: number) => {
+    isLoading.value = true;
+    backendHttpClient?.get('/api/transaction', { params: { 'page': pageNumber } })
+        .then(response => {
+            const { data, total } = response.data;
+            accountingComposable.setTransactions(data);
+            totalRows.value = total;
+        })
+        .catch(error => {
+            console.error(error);
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
+};
+const handlePageChange = (data: any) => {
+    params.currentPage = data.current_page;
+    params.pageSize = data.pagesize;
 
-        getTransactions(data.current_page);
-    };
+    getTransactions(data.current_page);
+};
 </script>
 
 <template>

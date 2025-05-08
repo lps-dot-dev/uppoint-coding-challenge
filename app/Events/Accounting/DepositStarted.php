@@ -48,12 +48,7 @@ class DepositStarted implements ShouldBroadcast
      */
     public function broadcastWith(): array
     {
-        return [
-            'id' => $this->transaction->id,
-            'amount' => $this->transaction->amount,
-            'status' => $this->transaction->status,
-            'type' => $this->transaction->type
-        ];
+        return get_object_vars($this->transaction);
     }
 
     public function getTransaction(): Transaction

@@ -8,6 +8,8 @@ import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import { useEchoReverbPlugin } from './plugins/echo';
 import { useBackendHttpClientPlugin } from './plugins/axios';
+import PrimeVue from 'primevue/config';
+import ToastService from 'primevue/toastservice';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -32,6 +34,8 @@ createInertiaApp({
             .use(useBackendHttpClientPlugin())
             .use(useEchoReverbPlugin())
             .use(plugin)
+            .use(PrimeVue)
+            .use(ToastService)
             .use(ZiggyVue)
             .mount(el);
     },
