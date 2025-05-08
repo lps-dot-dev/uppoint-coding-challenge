@@ -25,13 +25,13 @@ const page = usePage<SharedData>();
 const user = computed(() => page.props.auth.user);
 
 onMounted(() => {
-    const accountingChannel = echo?.channel(`Accounting.${user.value.id}`);
-    accountingChannel?.listen('deposit.created', () => {
+    const accountingChannel = echo?.private(`Accounting.${user.value.id}`);
+    accountingChannel?.listen('.deposit.created', () => {
         toastDescription.value = 'Deposit has been initiated!';
         displayToast.value = true;
     });
 
-    accountingChannel?.listen('deposit.processed', () => {
+    accountingChannel?.listen('.deposit.processed', () => {
         toastDescription.value = 'Deposit has been processed!';
         displayToast.value = true;
     });

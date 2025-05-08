@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, inject, ref } from 'vue';
 
 // Components
 import InputError from '@/components/InputError.vue';
@@ -18,14 +18,28 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { AxiosInstance } from 'axios';
+import { BackendHttpClientSymbol } from '@/plugins/axios';
 
+const backendHttpClient = inject<AxiosInstance>(BackendHttpClientSymbol);
 const form = useForm({
     amount: '0',
+    source: 'WELLS FARGO NA (1234)'
 });
+const isSubmitting = ref(false);
 
 const closeModal = () => {
     form.clearErrors();
     form.reset();
+};
+
+const submitDeposit = () => {
+    isSubmitting.value = true;
+    backendHttpClient?.post('/api/deposit', { amount: form.amount, source: form.source })
+        .finally(() => {
+            isSubmitting.value = false;
+            closeModal();
+        });
 };
 
 const amountValidationMessage = computed(() => {
@@ -47,7 +61,7 @@ const amountValidationMessage = computed(() => {
             <Button variant="destructive">New Deposit</Button>
         </DialogTrigger>
         <DialogContent>
-            <form class="space-y-6">
+            <form class="space-y-6" @submit.prevent>
                 <DialogHeader class="space-y-3">
                     <DialogTitle>Initialize New Deposit</DialogTitle>
                     <DialogDescription>
@@ -71,9 +85,11 @@ const amountValidationMessage = computed(() => {
                         <Button variant="secondary" @click="closeModal"> Cancel </Button>
                     </DialogClose>
 
-                    <Button variant="destructive" :disabled="amountValidationMessage !== undefined">
-                        <button type="submit">Submit</button>
-                    </Button>
+                    <DialogClose as-child>
+                        <Button variant="destructive" :disabled="amountValidationMessage !== undefined" @click="submitDeposit">
+                            Submit
+                        </Button>
+                    </DialogClose>
                 </DialogFooter>
             </form>
         </DialogContent>

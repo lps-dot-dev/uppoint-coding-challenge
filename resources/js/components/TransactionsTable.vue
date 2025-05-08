@@ -59,6 +59,7 @@
         previousArrow="Prev"
         nextArrow="Next"
         skin="bh-table-hover"
+        class="mx-4"
         :showNumbersCount="3"
         @page-change="handlePageChange"
     >
