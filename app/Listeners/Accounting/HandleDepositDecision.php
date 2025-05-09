@@ -51,6 +51,11 @@ class HandleDepositDecision implements ShouldQueue
             } catch (LockTimeoutException $_) {
                 // Sleep between retries
                 sleep(1);
+            } catch (\Throwable $e) {
+                // Something else went wrong, do not try again
+                /** @todo Perhaps add this to a list for manual review */
+                Log::error($e->getMessage());
+                break;
             }
         }
 
