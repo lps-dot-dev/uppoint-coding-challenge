@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
+ * @property string $uuid
  * @property float $amount
  * @property User $user
  */
@@ -36,6 +38,16 @@ class Transaction extends Model
             'type' => TransactionType::class,
             'updated_at' => 'immutable_datetime',
         ];
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (Transaction $transaction) {
+            $transaction->uuid = (string) Str::uuid();
+        });
     }
 
     public function user(): BelongsTo

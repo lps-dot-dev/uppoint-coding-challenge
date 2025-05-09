@@ -2,19 +2,16 @@ export type TransactionStatus = 'available' | 'failed' | 'pending';
 export type TransactionType = 'deposit' | 'transfer' | 'withdrawl';
 
 export interface DepositProcessed {
-    id: number,
+    uuid: string,
     status: TransactionStatus
 };
 
 export interface DepositCreated {
-    id: number,
-    amount: number,
-    status: TransactionStatus,
-    type: TransactionType
+    uuid: string
 }
 
 export interface Transaction {
-    id: number,
+    uuid: string,
     amount: number,
     status: TransactionStatus,
     type: TransactionType,

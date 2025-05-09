@@ -16,7 +16,7 @@ const page = usePage<SharedData>();
 const userId = page.props.auth.user.id;
 
 const columns = ref([
-    { field: 'id', title: 'ID', isUnique: true, type: 'number' },
+    { field: 'uuid', title: 'UUID', isUnique: true },
     { field: 'amount', title: 'Amount' },
     { field: 'status', title: 'Status' },
     { field: 'type', title: 'Type' },

@@ -49,7 +49,7 @@ class DepositProcessed implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'id' => $this->transaction->id,
+            'uuid' => $this->transaction->uuid,
             'status' => $this->transaction->status,
         ];
     }

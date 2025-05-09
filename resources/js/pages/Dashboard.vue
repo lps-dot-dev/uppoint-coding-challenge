@@ -30,17 +30,17 @@ const userId = page.props.auth.user.id;
 onMounted(() => {
     const accountingChannel = echo?.private(`Accounting.${userId}`);
     accountingChannel?.listen('.deposit.created', (deposit: Transaction) => {
-        toast.add({ severity: 'info', summary: `Deposit ${deposit.id}`, detail: 'Submitted, pending processing', life: 3000 });
+        toast.add({ severity: 'info', summary: `Deposit ${deposit.uuid}`, detail: 'Submitted, pending processing', life: 3000 });
     });
 
     accountingChannel?.listen('.deposit.processed', (depositProcessed: DepositProcessed) => {
         if (depositProcessed.status === 'available') {
-            toast.add({ severity: 'success', summary: `Deposit ${depositProcessed.id}`, detail: 'Processed successfully!', life: 3000 });
+            toast.add({ severity: 'success', summary: `Deposit ${depositProcessed.uuid}`, detail: 'Processed successfully!', life: 3000 });
         } else if (depositProcessed.status === 'failed') {
-            toast.add({ severity: 'error', summary: `Deposit ${depositProcessed.id}`, detail: 'Processing failed!', life: 3000 });
+            toast.add({ severity: 'error', summary: `Deposit ${depositProcessed.uuid}`, detail: 'Processing failed!', life: 3000 });
         }
 
-        accountingStore.updateTransactionStatus(depositProcessed.id, depositProcessed.status);
+        accountingStore.updateTransactionStatus(depositProcessed.uuid, depositProcessed.status);
     });
 });
 
