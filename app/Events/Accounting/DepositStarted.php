@@ -29,7 +29,7 @@ class DepositStarted implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('Accounting.'.$this->transaction->user_id),
+            new PrivateChannel('Accounting.'.$this->transaction->user->uuid),
         ];
     }
 

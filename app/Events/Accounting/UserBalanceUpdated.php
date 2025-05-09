@@ -15,7 +15,7 @@ class UserBalanceUpdated implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct(public int $userId, public float $amount)
+    public function __construct(public int $userUuid, public float $amount)
     {
         //
     }
@@ -28,7 +28,7 @@ class UserBalanceUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('Accounting.'.$this->userId),
+            new PrivateChannel('Accounting.'.$this->userUuid),
         ];
     }
 

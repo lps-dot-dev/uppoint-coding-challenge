@@ -16,7 +16,7 @@ const accountingStore = useAccountingStore();
 const backendHttpClient = inject<AxiosInstance>(BackendHttpClientSymbol);
 const echo = inject<Echo<'reverb'>>(EchoSymbol);
 const page = usePage<SharedData>();
-const userId = page.props.auth.user.id;
+const userUuid = page.props.auth.user.uuid;
 const usdFormat = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD'
@@ -38,7 +38,7 @@ const totalRows = ref(0);
 
 onMounted(() => {
     getTransactions(params.currentPage);
-    const accountingChannel = echo?.private(`Accounting.${userId}`);
+    const accountingChannel = echo?.private(`Accounting.${userUuid}`);
     accountingChannel?.listen('.deposit.created', () => {
         totalRows.value++;
         getTransactions(Math.ceil(totalRows.value / params.pageSize));
@@ -46,7 +46,7 @@ onMounted(() => {
 });
 
 onUnmounted(() =>{
-    echo?.leaveChannel(`Accounting.${userId}`);
+    echo?.leaveChannel(`Accounting.${userUuid}`);
 });
 
 const getTransactions = async (pageNumber: number) => {

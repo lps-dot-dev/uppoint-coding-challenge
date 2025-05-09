@@ -45,7 +45,7 @@ class HandleDepositDecision implements ShouldQueue
                     $user->save();
                 });
 
-                UserBalanceUpdated::dispatch($user->id, $user->wallet_balance);
+                UserBalanceUpdated::dispatch($user->uuid, $user->wallet_balance);
                 break;
 
             } catch (LockTimeoutException $_) {

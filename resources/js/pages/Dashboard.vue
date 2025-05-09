@@ -25,10 +25,10 @@ const accountingStore = useAccountingStore();
 const echo = inject<Echo<'reverb'>>(EchoSymbol);
 const toast = useToast();
 const page = usePage<SharedData>();
-const userId = page.props.auth.user.id;
+const userUuid = page.props.auth.user.uuid;
 
 onMounted(() => {
-    const accountingChannel = echo?.private(`Accounting.${userId}`);
+    const accountingChannel = echo?.private(`Accounting.${userUuid}`);
     accountingChannel?.listen('.deposit.created', (deposit: Transaction) => {
         toast.add({ severity: 'info', summary: `Deposit ${deposit.uuid}`, detail: 'Submitted, pending processing', life: 3000 });
     });
@@ -45,7 +45,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    echo?.leaveChannel(`Accounting.${userId}`);
+    echo?.leaveChannel(`Accounting.${userUuid}`);
 });
 
 </script>
