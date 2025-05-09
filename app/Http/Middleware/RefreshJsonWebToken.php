@@ -22,7 +22,7 @@ class RefreshJsonWebToken
 
         try {
             $token = $request->cookie(JsonWebTokenCookie::NAME);
-            if (!$token) {
+            if (empty($token)) {
                 return $response;
             }
 
@@ -32,7 +32,6 @@ class RefreshJsonWebToken
             // Attach new token in HttpOnly, Secure cookie
             $cookie = JsonWebTokenCookie::make($newToken);
             $response->headers->setCookie($cookie);
-
         } catch (JWTException $e) {
             // Could not refresh token — ignore or handle if needed
         }
