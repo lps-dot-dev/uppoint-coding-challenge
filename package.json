@@ -38,6 +38,7 @@
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^1.0",
         "lucide-vue-next": "^0.468.0",
+        "moment-timezone": "^0.5.48",
         "pinia": "^3.0.2",
         "primevue": "^4.3.4",
         "reka-ui": "^2.2.0",
