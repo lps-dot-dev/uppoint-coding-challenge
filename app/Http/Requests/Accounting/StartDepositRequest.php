@@ -23,7 +23,7 @@ class StartDepositRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => ['required', 'decimal:2'],
+            'amount' => ['required', 'numeric'],
             'source' => ['required']
         ];
     }
