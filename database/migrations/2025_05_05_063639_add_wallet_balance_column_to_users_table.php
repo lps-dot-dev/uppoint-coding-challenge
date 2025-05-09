@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->double('wallet_balance')->after('password');
+            $table->double('wallet_balance')->default(0)->after('password');
         });
     }
 
