@@ -75,7 +75,7 @@ const handlePageChange = (data: any) => {
 const formatTimestamp = (timestamp: string): string => {
     const utcMoment = moment.tz(timestamp, 'UTC');
     const currentMoment = utcMoment.clone().tz(moment.tz.guess());
-    return currentMoment.format('Y-MM-DD h:m:sa');
+    return currentMoment.format('Y-MM-DD h:mm:ssa');
 };
 
 const getStatusLabel = (status: string) => {
