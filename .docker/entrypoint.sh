@@ -19,6 +19,9 @@ else
     echo "🔑 APP_KEY already set. Skipping key generation."
 fi
 
+echo "📦 Running Laravel optimizations..."
+php artisan optimize
+
 echo "📦 Running Laravel migrations..."
 php artisan migrate
 
