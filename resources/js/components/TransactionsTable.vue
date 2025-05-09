@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { AxiosInstance } from 'axios';
 import { BackendHttpClientSymbol } from '@/plugins/axios';
-import { inject, reactive, ref, onMounted, computed } from 'vue';
+import { inject, reactive, ref, onMounted, computed, onUnmounted } from 'vue';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
 import { useAccountingStore } from '@/stores/accounting';
+import Echo from 'laravel-echo';
+import { EchoSymbol } from '@/plugins/echo';
+import { usePage } from '@inertiajs/vue3';
+import { SharedData } from '@/types';
 
 const accountingStore = useAccountingStore();
 const backendHttpClient = inject<AxiosInstance>(BackendHttpClientSymbol);
-const isLoading = ref(false);
-const totalRows = ref(0);
+const echo = inject<Echo<'reverb'>>(EchoSymbol);
+const page = usePage<SharedData>();
+const userId = page.props.auth.user.id;
 
 const columns = ref([
     { field: 'id', title: 'ID', isUnique: true, type: 'number' },
@@ -21,8 +26,20 @@ const columns = ref([
 const params = reactive({ currentPage: 1, pageSize: 10 });
 const rows = computed(() => accountingStore.transactionsList);
 
+const isLoading = ref(false);
+const totalRows = ref(0);
+
 onMounted(() => {
     getTransactions(params.currentPage);
+    const accountingChannel = echo?.private(`Accounting.${userId}`);
+    accountingChannel?.listen('.deposit.created', () => {
+        totalRows.value++;
+        getTransactions(Math.ceil(totalRows.value / params.pageSize));
+    });
+});
+
+onUnmounted(() =>{
+    echo?.leaveChannel(`Accounting.${userId}`);
 });
 
 const getTransactions = async (pageNumber: number) => {
@@ -63,7 +80,7 @@ const handlePageChange = (data: any) => {
         skin="bh-table-hover"
         class="mx-4"
         :showNumbersCount="3"
-        @page-change="handlePageChange"
+        @change="handlePageChange"
     >
     </vue3-datatable>
 </template>
