@@ -15,7 +15,7 @@ class UserBalanceUpdated implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct(public int $userUuid, public float $amount)
+    public function __construct(public string $userUuid, public float $amount)
     {
         //
     }
