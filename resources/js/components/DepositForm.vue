@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3';
 import { computed, inject, ref } from 'vue';
+import { AxiosInstance } from 'axios';
+import { BackendHttpClientSymbol } from '@/plugins/axios';
+import { useToast } from 'primevue/usetoast';
 
 // Components
 import InputError from '@/components/InputError.vue';
@@ -18,8 +21,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AxiosInstance } from 'axios';
-import { BackendHttpClientSymbol } from '@/plugins/axios';
 
 const backendHttpClient = inject<AxiosInstance>(BackendHttpClientSymbol);
 const form = useForm({
@@ -27,6 +28,7 @@ const form = useForm({
     source: 'WELLS FARGO NA (1234)'
 });
 const isSubmitting = ref(false);
+const toast = useToast();
 
 const closeModal = () => {
     form.clearErrors();
@@ -36,9 +38,16 @@ const closeModal = () => {
 const submitDeposit = () => {
     isSubmitting.value = true;
     backendHttpClient?.post('/api/deposit', { amount: form.amount, source: form.source })
+        .then(() => {
+            toast.add({ severity: 'info', summary: `New Deposit`, detail: 'Submitting...', life: 3000 });
+            closeModal();
+        })
+        .catch(error => {
+            toast.add({ severity: 'error', summary: `New Deposit`, detail: 'Failed to submit! Please try again later!', life: 3000 });
+            console.error(error);
+        })
         .finally(() => {
             isSubmitting.value = false;
-            closeModal();
         });
 };
 
