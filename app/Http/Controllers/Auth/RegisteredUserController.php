@@ -34,6 +34,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'wallet_balance' => 0.00,
         ]);
 
         $token = auth()->login($user);

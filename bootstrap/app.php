@@ -34,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
             RefreshJsonWebToken::class,
+            AddQueuedCookiesToResponse::class,
         ]);
 
         $middleware->web(append: [
@@ -67,6 +68,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()
                     ->json(['message' => 'Unauthenticated.'], 401)
                     ->withoutCookie(JsonWebTokenCookie::NAME);
+            }
+            
+            if (
+                $request->hasHeader('X-Echo-Reverb')
+                && $request->header('X-Echo-Reverb') === 'auth'
+            ) {
+                return response()->json(['message' => 'Unauthenticated.'], 403);
             }
     
             return redirect()
